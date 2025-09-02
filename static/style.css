@@ -1,0 +1,6 @@
+body { font-family: Arial, sans-serif; margin: 20px; }
+h1 { color: #333; }
+table { border-collapse: collapse; width: 100%; margin-top: 20px; }
+th, td { border: 1px solid #ccc; padding: 8px; text-align: left; }
+.new { background-color: #ffb6c1; } /* Roz pentru anunțuri noi */
+a { text-decoration: none; color: blue; }

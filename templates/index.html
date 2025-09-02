@@ -1,0 +1,34 @@
+<!DOCTYPE html>
+<html lang="ro">
+<head>
+    <meta charset="UTF-8">
+    <title>Dashboard Anunțuri - {{ city }}</title>
+    <link rel="stylesheet" href="/static/style.css">
+</head>
+<body>
+    <h1>Anunțuri apartamente - {{ city }}</h1>
+    <table>
+        <tr>
+            <th>Titlu</th>
+            <th>Preț</th>
+            <th>Micro</th>
+            <th>Dată publicare</th>
+            <th>Dată reînnoire</th>
+            <th>An construcție</th>
+            <th>Link</th>
+        </tr>
+        {% for l in listings %}
+        <tr class="{{ 'new' if l.Nou else '' }}">
+            <td>{{ l["Titlu"] }}</td>
+            <td>{{ l["Preț"] }}</td>
+            <td>{{ l["Micro"] }}</td>
+            <td>{{ l["Dată publicare"] }}</td>
+            <td>{{ l["Dată reînnoire"] }}</td>
+            <td>{{ l["An construcție"] }}</td>
+            <td><a href="{{ l["Link"] }}" target="_blank">Deschide</a></td>
+        </tr>
+        {% endfor %}
+    </table>
+    <a href="/export">Export Excel</a>
+</body>
+</html>
