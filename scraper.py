@@ -14,7 +14,7 @@ def get_listings(city="Târgoviște"):
             "Dată reînnoire": today.strftime("%Y-%m-%d %H:%M"),
             "Link": "https://www.olx.ro/example-apartament1",
             "An construcție": "1985",
-            "Nou": (today - datetime.timedelta(hours=30)).days < 2
+            "Nou": (today - datetime.timedelta(hours=30)).day < 2
         },
         {
             "Titlu": "Apartament 3 camere Micro 6",
