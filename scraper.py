@@ -1,34 +1,69 @@
+import requests
+from bs4 import BeautifulSoup
 import datetime
-import random
 
 class Scraper:
     def __init__(self):
-        # aici putem defini lista de site-uri suportate
-        self.sources = [
-            "https://www.olx.ro/imobiliare",
-            "https://www.storia.ro",
-            "https://www.imobiliare.ro",
-            "https://www.publi24.ro/anunturi/imobiliare",
-            "https://www.piata-az.ro",
-        ]
+        self.headers = {
+            "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/118.0.0.0 Safari/537.36"
+        }
 
-    def get_listings(self, city="Târgoviște"):
-        today = datetime.datetime.now()
+    def get_olx(self, city="targoviste"):
+        url = f"https://www.olx.ro/imobiliare/apartamente-garsoniere-de-vanzare/?q={city}"
+        response = requests.get(url, headers=self.headers)
+        soup = BeautifulSoup(response.text, "html.parser")
 
-        # 🔹 momentan simulează extragerea (poți extinde cu requests + BeautifulSoup)
+        ads = soup.find_all("div", class_="css-1sw7q4x")
+        results = []
+        for ad in ads:
+            try:
+                title = ad.find("h6").text.strip()
+                price = ad.find("p", class_="css-10b0gli er34gjf0").text.strip()
+                link = ad.find("a", href=True)["href"]
+                date_info = ad.find("span", class_="css-19yf5ek").text.strip()
+
+                results.append({
+                    "Titlu": title,
+                    "Preț": price,
+                    "Link": link,
+                    "Dată": date_info,
+                    "Nou": "azi" in date_info.lower() or "ieri" in date_info.lower(),
+                    "Sursă": "OLX"
+                })
+            except:
+                continue
+        return results
+
+    def get_publi24(self, city="targoviste"):
+        url = f"https://www.publi24.ro/anunturi/imobiliare/apartamente-de-vanzare/{city}/"
+        response = requests.get(url, headers=self.headers)
+        soup = BeautifulSoup(response.text, "html.parser")
+
+        ads = soup.find_all("div", class_="listing-item")
+        results = []
+        for ad in ads:
+            try:
+                title = ad.find("h4").text.strip()
+                price = ad.find("div", class_="price").text.strip()
+                link = ad.find("a", href=True)["href"]
+
+                results.append({
+                    "Titlu": title,
+                    "Preț": price,
+                    "Link": link,
+                    "Dată": "N/A",
+                    "Nou": False,
+                    "Sursă": "Publi24"
+                })
+            except:
+                continue
+        return results
+
+    def get_listings(self, city="targoviste"):
         listings = []
-        for i in range(10):
-            listing = {
-                "Titlu": f"Apartament {random.randint(1, 4)} camere - {city}",
-                "Preț": f"{random.randint(40, 120)}.000 €",
-                "Suprafață": f"{random.randint(40, 100)} mp",
-                "An construcție": random.choice([1990, 2005, 2015, 2020, 2023]),
-                "Sursă": random.choice(self.sources),
-                "Dată": today.strftime("%Y-%m-%d %H:%M"),
-                "Nou": True if (today - datetime.timedelta(hours=random.randint(1, 48))) < today else False
-            }
-            listings.append(listing)
-
+        listings.extend(self.get_olx(city))
+        listings.extend(self.get_publi24(city))
+        # Aici putem adăuga get_storia() și get_imobiliare()
         return listings
 
 
